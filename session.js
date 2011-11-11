@@ -26,7 +26,7 @@ function Session(parsedUrl, config, transport) {
 
 	console.log('XHR session created', this);
 	this._send(transport);
-};
+}
 
 /**
  * The port number to connect to the remote host on - default is 80 for standard HTTP
@@ -119,8 +119,8 @@ Session.prototype._send = function(transport) {
  */
 Session.prototype._error = function(err) {
 	console.log('XHR error', err, this);
-	try { this.error(err); } catch(e) {}
-	try { this.complete(); } catch(e) {}
+	try { this.error(err); } catch(e1) {}
+	try { this.complete(); } catch(e2) {}
 };
 
 /**
@@ -151,10 +151,10 @@ Session.prototype._onDataReceived = function(data) {
 Session.prototype._onDataComplete = function() {
 	var response = this.response;
 	if(response.statusCode == 200) {
-		try { this.success(this.response.data, this.response, this); } catch(e) {}
+		try { this.success(this.response.data, this.response, this); } catch(e1) {}
 	}
 	else {
-		try { this.error(this.response.data, this.response, this); } catch(e) {}
+		try { this.error(this.response.data, this.response, this); } catch(e2) {}
 	}
 	try { this.complete(); } catch(e) {}
 };
