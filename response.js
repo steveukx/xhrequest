@@ -9,7 +9,7 @@
 function Response(statusCode, headers) {
 	this.statusCode = statusCode;
 	this.headers = headers;
-};
+}
 
 /**
  * The statusCode is the HTTP response code
