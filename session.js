@@ -20,9 +20,17 @@ function Session(parsedUrl, config, transport) {
 	}
 
 	// apply optional things using the prototype as the default
-	('success|error|complete|' + 'method|data').split('|').forEach((function(el) {
+	('success|error|complete|' + 'method|data|cookies').split('|').forEach((function(el) {
 		this[el] = config[el] || this[el];
 	}).bind(this));
+
+	if(typeof this.cookies == 'object') {
+		this.cookies = (function(cookieObject) {
+			var rtn = [], names = Object.keys(cookieObject);
+			names.forEach(function(itm) { rtn.push(itm + '=' + cookieObject[itm]); });
+			return rtn.join('; ');
+		}(this.cookies));
+	}
 
 	console.log('XHR session created', this);
 	this._send(transport);
@@ -45,6 +53,12 @@ Session.prototype.host = '';
  * @type {String}
  */
 Session.prototype.path = '/';
+
+/**
+ * A map of the cookies to be sent with the request.
+ * @type {Object}
+ */
+Session.prototype.cookies = '';
 
 /**
  * The HTTP method name to use - default is GET but can be any of the recognised method names
@@ -97,15 +111,27 @@ Session.prototype._send = function(transport) {
 		host: this.host,
 		port: this.port,
 		path: this.path,
-		method: this.method
+		method: this.method,
+		headers: {}
 	};
 
-// TODO - if(this.data && this.contentType) {
-// TODO - options.headers = { 'Content-Type': this.contentType, 'Content-Length': this.data.length };
+	// add the cookies
+	if(this.cookies) {
+		options.headers['Cookie'] = this.cookies;
+	}
+
+	// add the post data
+	if(this.data) {
+		options.headers['Content-Type'] = this.contentType;
+		options.headers['Content-Length'] = this.data.length;
+	}
+
+// TODO - options.headers.Authorization = 'Basic ' + new Buffer(opts.auth).toString('base64');
 
 	var req = transport.request(options, this._onRequestOpened.bind(this));
-//	if(this.data) {
-//	}
+	if(this.data) {
+		req.write(this.data);
+	}
 	req.end();
 
 	req.on('error', this._error.bind(this));

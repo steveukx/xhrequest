@@ -18,7 +18,7 @@ function Xhr(url, config) {
 	var parsedUrl = Url.parse(url),
 		 transport = http;
 	
-	if(parsedUrl.prototcol == 'https') {
+	if(parsedUrl.protocol == 'https:') {
 		transport = https;
 		parsedUrl.port = parsedUrl.port || 443;
 	}
