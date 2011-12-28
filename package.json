@@ -1,23 +1,21 @@
 {
-  "name": "xhrequest",
-  "description": "Node implementation of XMLHttpRequest",
-  "version": "1.0.1",
-  "author": "Steve King <steve@mydev.co>",
-  "contributors": [ 
-    { "name": "Steve King", "email": "steve@mydev.co" }
-  ],
-  "dependencies": {
-  },
-  "devDependencies": {
-  },
-  "keywords": ["web", "xhr", "ajax"],
-  "repository": "git://github.com/steveukx/xhrequest",
-  "main": "index",
-  "bin": {
-  },
-  "scripts": {
-  },
-  "config": {
-  },
-  "engines": { "node": ">= 0.4.1 < 0.7.0" }
+   "name":           "xhrequest",
+   "description":    "Node implementation of XMLHttpRequest",
+   "version":        "1.0.2",
+   "author":         "Steve King <steve@mydev.co>",
+   "contributors": [
+      { "name":"Steve King", "email":"steve@mydev.co" }
+   ],
+   "dependencies":    { },
+   "devDependencies": { },
+   "keywords":        ["web", "xhr", "ajax"],
+   "repository":      "git://github.com/steveukx/xhrequest",
+   "main":            "index",
+   "bin":             {},
+   "scripts":         {},
+   "config":{
+   },
+   "engines":{
+      "node":">= 0.4.1"
+   }
 }

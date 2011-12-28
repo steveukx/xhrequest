@@ -1,39 +1,40 @@
-
 var Response = require('./response');
 
 /**
  * The session object is used to manage the request as it is made and configure how the request will be
  * issued. The session itself can use any transport mechanism that suports the same interface as the
  * standard http/https request classes in Node.
- * 
+ *
  * @param {Object} parsedUrl The result of running Url.parse on a string
  * @param {Object} config Any configuration required (currently see jQuery docs)
  * @param {Object} transport Any object with the interface of http/https
  */
 function Session(parsedUrl, config, transport) {
-	this.port = parsedUrl.port || this.port;
-	this.host = parsedUrl.host;
-	this.path = parsedUrl.pathname;
+   this.port = parsedUrl.port || this.port;
+   this.host = parsedUrl.host;
+   this.path = parsedUrl.pathname;
 
-	if(parsedUrl.search) {
-		this.path += parsedUrl.search;
-	}
+   if (parsedUrl.search) {
+      this.path += parsedUrl.search;
+   }
 
-	// apply optional things using the prototype as the default
-	('success|error|complete|' + 'method|data|cookies').split('|').forEach((function(el) {
-		this[el] = config[el] || this[el];
-	}).bind(this));
+   // apply optional things using the prototype as the default
+   ('success|error|complete|' + 'method|data|cookies').split('|').forEach((function (el) {
+      this[el] = config[el] || this[el];
+   }).bind(this));
 
-	if(typeof this.cookies == 'object') {
-		this.cookies = (function(cookieObject) {
-			var rtn = [], names = Object.keys(cookieObject);
-			names.forEach(function(itm) { rtn.push(itm + '=' + cookieObject[itm]); });
-			return rtn.join('; ');
-		}(this.cookies));
-	}
+   if (typeof this.cookies == 'object') {
+      this.cookies = (function (cookieObject) {
+         var rtn = [], names = Object.keys(cookieObject);
+         names.forEach(function (itm) {
+            rtn.push(itm + '=' + cookieObject[itm]);
+         });
+         return rtn.join('; ');
+      }(this.cookies));
+   }
 
-	console.log('XHR session created', this);
-	this._send(transport);
+   console.log('XHR session created', this);
+   this._send(transport);
 }
 
 /**
@@ -85,104 +86,122 @@ Session.prototype.contentType = 'application/www-urlencoded';
  * a noop function that can be overridden in the configuration object.
  * @type {Function}
  */
-Session.prototype.success = function() {};
+Session.prototype.success = function () {
+};
 
 /**
  * When an error response (ie: anything other than status code 200) is received this method will be
  * called, this is a noop function that can be overridden in the configuration object.
  * @type {Function}
  */
-Session.prototype.error = function() {};
+Session.prototype.error = function () {
+};
 
 /**
  * Irrispective of whether there was a success or error response, this method will be called after
  * the success/error methods are called, this is a noop function that can be overridden in the configuration object.
  * @type {Function}
  */
-Session.prototype.complete = function() {};
+Session.prototype.complete = function () {
+};
 
 /**
  * This method actually creates the request using the transport mechanism supplied.
- * 
+ *
  * @param {Object} transport Any object that implements the interface used by the built in http/https objects
  */
-Session.prototype._send = function(transport) {
-	var options = {
-		host: this.host,
-		port: this.port,
-		path: this.path,
-		method: this.method,
-		headers: {}
-	};
+Session.prototype._send = function (transport) {
+   var options = {
+      host:this.host,
+      port:this.port,
+      path:this.path,
+      method:this.method,
+      headers:{}
+   };
 
-	// add the cookies
-	if(this.cookies) {
-		options.headers['Cookie'] = this.cookies;
-	}
+   // add the cookies
+   if (this.cookies) {
+      options.headers['Cookie'] = this.cookies;
+   }
 
-	// add the post data
-	if(this.data) {
-		options.headers['Content-Type'] = this.contentType;
-		options.headers['Content-Length'] = this.data.length;
-	}
+   // add the post data
+   if (this.data) {
+      options.headers['Content-Type'] = this.contentType;
+      options.headers['Content-Length'] = this.data.length;
+   }
 
 // TODO - options.headers.Authorization = 'Basic ' + new Buffer(opts.auth).toString('base64');
 
-	var req = transport.request(options, this._onRequestOpened.bind(this));
-	if(this.data) {
-		req.write(this.data);
-	}
-	req.end();
+   var req = transport.request(options, this._onRequestOpened.bind(this));
+   if (this.data) {
+      req.write(this.data);
+   }
+   req.end();
 
-	req.on('error', this._error.bind(this));
+   req.on('error', this._error.bind(this));
 };
 
 /**
  * If there is an error when connecting to the remote host, this method is used to call the error and complete
  * handlers.
- * 
+ *
  * @param {Error} err Details of the connection failure
  */
-Session.prototype._error = function(err) {
-	console.log('XHR error', err, this);
-	try { this.error(err); } catch(e1) {}
-	try { this.complete(); } catch(e2) {}
+Session.prototype._error = function (err) {
+   console.log('XHR error', err, this);
+   try {
+      this.error(err);
+   } catch (e1) {
+   }
+   try {
+      this.complete();
+   } catch (e2) {
+   }
 };
 
 /**
  * Once the connection has been made to the remote host, this method sets up the Response object that the
  * handlers will ultimately be passed when the operation completes.
- * 
+ *
  * @param {Object} res The response object from the remote call
  */
-Session.prototype._onRequestOpened = function(res) {
-	this.response = new Response(res.statusCode, res.headers);
-	res.on('data', this._onDataReceived.bind(this));
-	res.on('end',  this._onDataComplete.bind(this));
+Session.prototype._onRequestOpened = function (res) {
+   this.response = new Response(res.statusCode, res.headers);
+   res.on('data', this._onDataReceived.bind(this));
+   res.on('end', this._onDataComplete.bind(this));
 };
 
 /**
  * As data is received it is appended to the Response object in the current Session.
- * 
+ *
  * @param {String} data The block of data to append
  */
-Session.prototype._onDataReceived = function(data) {
-	this.response.data += data;
+Session.prototype._onDataReceived = function (data) {
+   this.response.data += data;
 };
 
 /**
  * Once data has finished being received from the remote connection, this method runs the handlers from the
  * original configuration object.
  */
-Session.prototype._onDataComplete = function() {
-	var response = this.response;
-	if(response.statusCode == 200) {
-		try { this.success(this.response.data, this.response, this); } catch(e1) {}
-	}
-	else {
-		try { this.error(this.response.data, this.response, this); } catch(e2) {}
-	}
-	try { this.complete(); } catch(e) {}
+Session.prototype._onDataComplete = function () {
+   var response = this.response;
+   if (response.statusCode == 200) {
+      try {
+         this.success(this.response.data, this.response, this);
+      } catch (e1) {
+      }
+   }
+   else {
+      try {
+         this.error(this.response.data, this.response, this);
+      } catch (e2) {
+      }
+   }
+   try {
+      this.complete();
+   } catch (e) {
+   }
 };
 
 module.exports = Session;

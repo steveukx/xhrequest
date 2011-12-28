@@ -1,0 +1,6 @@
+.idea*
+.git*
+jsTestDriver.conf
+test/
+.DS_Store
+Thumbs.db
