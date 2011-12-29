@@ -19,6 +19,14 @@ CookieJar.prototype._cookies = null;
 CookieJar.prototype._cookiesMap = null;
 
 /**
+ * Gets the number of cookies in the CookieJar
+ * @return {Number}
+ */
+CookieJar.prototype.count = function() {
+   return this._cookies.length;
+};
+
+/**
  *
  * @param {String|Number} searchFor
  */
@@ -59,7 +67,7 @@ CookieJar.prototype.add = function(cookie) {
    if(index === undefined) {
       index = this._cookies.length;
       this._cookies.push(cookie);
-      this._cookiesMap[cookie.name]
+      this._cookiesMap[cookie.name] = index;
    }
    else {
       this._cookies[index] = cookie;
