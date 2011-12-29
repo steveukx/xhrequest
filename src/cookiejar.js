@@ -64,13 +64,16 @@ CookieJar.prototype.add = function(cookie) {
    }
 
    var index = this._cookiesMap[cookie.name];
-   if(index === undefined) {
+   if(index === undefined && !cookie.expired) {
       index = this._cookies.length;
       this._cookies.push(cookie);
       this._cookiesMap[cookie.name] = index;
    }
-   else {
+   else if(!cookie.expired) {
       this._cookies[index] = cookie;
+   }
+   else if(index !== undefined) {
+      this._cookies[index] = null;
    }
 };
 

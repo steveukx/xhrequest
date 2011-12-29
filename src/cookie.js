@@ -25,6 +25,11 @@ Cookie.prototype.domain = '';
 Cookie.prototype.value = '';
 
 /**
+ * @type {Boolean}
+ */
+Cookie.prototype.expired = false;
+
+/**
  * @type {Date}
  */
 Cookie.prototype.expires = null;
@@ -65,7 +70,7 @@ Cookie.build = function (cookieString) {
 
    cookie.expires = new Date(cookie.expires);
    if (+cookie.expires < Date.now()) {
-      return null;
+      cookie.expired = true;
    }
 
    return cookie;

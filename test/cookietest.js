@@ -12,9 +12,9 @@ TestCase("CookieTest", {
       assertEquals(valueString, cookie.value);
    },
 
-   'test build returns no cookie when it should have expired': function() {
-      assertEquals(null, Cookie.build( anHttpCookieStringExpiringIn(2009) ));
-      assertTrue( (Cookie.build( anHttpCookieString() )) instanceof Cookie );
+   'test build expired cookies': function() {
+      assertTrue(  Cookie.build( anExpiredHttpCookieString() ).expired );
+      assertFalse( Cookie.build( anHttpCookieString() ).expired );
    }
 
 });
