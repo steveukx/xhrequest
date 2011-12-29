@@ -66,6 +66,22 @@ TestCase("CookieJarTest", {
       cookieJar.add( cookie_c );
       assertEquals(cookie_b, cookieJar.get('id'));
       assertEquals(cookie_c, cookieJar.get('newId'));
+   },
+
+   "test toString will create a valid HTTP header":function () {
+      var cookie_a = Cookie.build( anHttpCookieString('foo', 'foofoo') ),
+         cookie_b = Cookie.build( anHttpCookieString('bar', 'barbar') ),
+         cookie_c = Cookie.build( anHttpCookieString('wibble', 'plop') ),
+         cookieJar = new CookieJar();
+
+      cookieJar.add( cookie_a );
+      cookieJar.add( cookie_b );
+      cookieJar.add( cookie_c );
+
+      assertEquals('foo=foofoo; bar=barbar; wibble=plop', cookieJar + '');
+
+      cookieJar.add( anExpiredHttpCookieString('bar') );
+      assertEquals('foo=foofoo; wibble=plop', cookieJar + '');
    }
 
 });

@@ -77,4 +77,40 @@ CookieJar.prototype.add = function(cookie) {
    }
 };
 
+/**
+ * Custom toString method for the CookieJar returns the cookies it contains as a string for use in an HTTP request.
+ * @return {String}
+ */
+CookieJar.prototype.toString = function() {
+   var cookies = [];
+   for(var i = 0, l = this._cookies.length; i < l; i++) {
+      if(this._cookies[i]) {
+         cookies.push(this._cookies[i].name + '=' + this._cookies[i].value);
+      }
+   }
+   return cookies.join('; ');
+};
+
+/**
+ * Creates a CookieJar from the supplied map, the values of which can be HTTP Cookie Strings, name/value pairs
+ * or actual Cookie instances.
+ *
+ * @param cookiesMap
+ * @return CookieJar
+ */
+CookieJar.build = function(cookiesMap) {
+   var cookieJar = new CookieJar(),
+       cookieFormat = /\w+=([^;]+); /;
+
+   for(var cookieName in cookiesMap) {
+      var cookie = cookiesMap[cookieName];
+      if(typeof cookie == 'string' && !cookieFormat.test(cookie)) {
+         cookie = new Cookie(cookieName, cookie);
+      }
+      
+      cookieJar.add(cookie);
+   }
+   return cookieJar;
+};
+
 module.exports = CookieJar;

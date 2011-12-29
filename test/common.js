@@ -8,6 +8,8 @@ function require(requiredThing) {
       switch(requiredThingName) {
          case 'cookie':    return window.Cookie;
          case 'cookiejar': return window.CookieJar;
+         case 'response': return window.Response;
+         case 'session': return window.Session;
          default: return {};
       }
    }
@@ -46,4 +48,4 @@ url.parse = function() {
       pathname: '',
       search: ''
    }
-}
+};

@@ -25,4 +25,7 @@ function Xhr(url, config) {
    return new Session(parsedUrl, config, transport);
 }
 
+Xhr.Cookie = require('./cookie');
+Xhr.CookieJar = require('./cookiejar');
+
 module.exports = Xhr;

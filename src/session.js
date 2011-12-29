@@ -1,4 +1,5 @@
-var Response = require('./response');
+var Response = require('./response'),
+    CookieJar = require('./cookiejar');
 
 /**
  * The session object is used to manage the request as it is made and configure how the request will be
@@ -24,13 +25,7 @@ function Session(parsedUrl, config, transport) {
    }).bind(this));
 
    if (typeof this.cookies == 'object') {
-      this.cookies = (function (cookieObject) {
-         var rtn = [], names = Object.keys(cookieObject);
-         names.forEach(function (itm) {
-            rtn.push(itm + '=' + cookieObject[itm]);
-         });
-         return rtn.join('; ');
-      }(this.cookies));
+      this.cookies = CookieJar.build(this.cookies);
    }
 
    console.log('XHR session created', this);
@@ -57,7 +52,7 @@ Session.prototype.path = '/';
 
 /**
  * A map of the cookies to be sent with the request.
- * @type {Object}
+ * @type {CookieJar}
  */
 Session.prototype.cookies = '';
 
@@ -120,8 +115,8 @@ Session.prototype._send = function (transport) {
    };
 
    // add the cookies
-   if (this.cookies) {
-      options.headers['Cookie'] = this.cookies;
+   if (this.cookies && this.cookies.count()) {
+      options.headers['Cookie'] = this.cookies.toString();
    }
 
    // add the post data

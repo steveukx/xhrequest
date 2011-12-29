@@ -2,11 +2,18 @@
 "use strict";
 
 /**
- * The Cookie class represents a Cookie sent from or to the server.
+ * The Cookie class represents a Cookie sent from or to the server. If the name and value arguments are supplied
+ * they will be used as the name and value of the Cookie, the expires property is set to now + one year.
  *
  * @constructor
+ *
+ * @param {String} [name]
+ * @param {String} [value]
  */
-function Cookie() {
+function Cookie(name, value) {
+   this.name = name || this.name;
+   this.value = value || this.value;
+   this.expires = new Date(Date.now() + 31536000000);
 }
 
 /**
