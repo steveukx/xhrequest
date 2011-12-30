@@ -37,15 +37,32 @@ function anHttpCookieStringExpiringIn(expiryYear, name, value, path, domain) {
    return nameString + valueString + '; expires=' + expiryString + '; path=' + (path || '/') + '; domain=' + domainString;
 }
 
-function http() {}
-function https() {}
+var transportFunctions = {};
+transportFunctions.end = function () {};
+transportFunctions.on = function () {};
+transportFunctions.write = function () {};
+
+var http = https = {
+   request: function(transportConfig) {
+      return transportFunctions;
+   }
+};
+
 function url() {}
-url.parse = function() {
+url.parse = function(url) {
+
+   var transportRegex = /(.*):\/\//,
+       protocol = url.match(transportRegex);
+
+   protocol = protocol ? protocol[0] : 'http://';
+
+   url = url.replace(transportRegex, '').split('/');
+
    return {
-      protocol: 'http:',
-      port: 80,
-      host: '',
-      pathname: '',
+      protocol: protocol,
+      port: protocol == 'http://' ? 80 : 443,
+      host: url.shift(),
+      pathname: '/' + url.join('/'),
       search: ''
    }
 };

@@ -2,5 +2,6 @@
 .git*
 jsTestDriver.conf
 test/
+test-lib/
 .DS_Store
 Thumbs.db

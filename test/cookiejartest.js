@@ -78,10 +78,10 @@ TestCase("CookieJarTest", {
       cookieJar.add( cookie_b );
       cookieJar.add( cookie_c );
 
-      assertEquals('foo=foofoo; bar=barbar; wibble=plop', cookieJar + '');
+      assertEquals('foo=foofoo; bar=barbar; wibble=plop', cookieJar.getHeaderStringForPath('google.co.uk', '/'));
 
       cookieJar.add( anExpiredHttpCookieString('bar') );
-      assertEquals('foo=foofoo; wibble=plop', cookieJar + '');
+      assertEquals('foo=foofoo; wibble=plop', cookieJar.getHeaderStringForPath('google.co.uk', '/'));
    }
 
 });

@@ -78,10 +78,14 @@ CookieJar.prototype.add = function(cookie) {
 };
 
 /**
- * Custom toString method for the CookieJar returns the cookies it contains as a string for use in an HTTP request.
+ * Creates the header string that should be sent with a request to the supplied domain and path values. If a Cookie
+ * instance in the CookieJar has no domain set, it will be assumed valid for every domain.
+ *
+ * @param {String} domain
+ * @param {String} path
  * @return {String}
  */
-CookieJar.prototype.toString = function() {
+CookieJar.prototype.getHeaderStringForPath = function(domain, path) {
    var cookies = [];
    for(var i = 0, l = this._cookies.length; i < l; i++) {
       if(this._cookies[i]) {

@@ -20,12 +20,12 @@ function Session(parsedUrl, config, transport) {
    }
 
    // apply optional things using the prototype as the default
-   ('success|error|complete|' + 'method|data|cookies').split('|').forEach((function (el) {
+   ('success|error|complete|' + 'method|data|cookies|headers').split('|').forEach((function (el) {
       this[el] = config[el] || this[el];
    }).bind(this));
 
-   if (typeof this.cookies == 'object') {
-      this.cookies = CookieJar.build(this.cookies);
+   if(!(this.cookies instanceof CookieJar)) {
+      this.cookies = CookieJar.build(this.cookies || {});
    }
 
    console.log('XHR session created', this);
@@ -51,7 +51,7 @@ Session.prototype.host = '';
 Session.prototype.path = '/';
 
 /**
- * A map of the cookies to be sent with the request.
+ * The CookieJar of Cookie instances to send with the request.
  * @type {CookieJar}
  */
 Session.prototype.cookies = '';
@@ -75,6 +75,13 @@ Session.prototype.data = '';
  * @type {String}
  */
 Session.prototype.contentType = 'application/www-urlencoded';
+
+/**
+ * A map of HTTP header values to send along with the request; if a Cookie header is supplied as well
+ * as a CookieJar for the cookies, the CookieJar will take precedence.
+ * @type {Object}
+ */
+Session.prototype.headers = null;
 
 /**
  * When a successful response (ie: status code 200) is received this method will be called, this is
@@ -114,15 +121,21 @@ Session.prototype._send = function (transport) {
       headers:{}
    };
 
+   if(this.headers) {
+      for(var header in this.headers) {
+         options.headers[header] = this.headers[header];
+      }
+   }
+
    // add the cookies
    if (this.cookies && this.cookies.count()) {
-      options.headers['Cookie'] = this.cookies.toString();
+      options.headers['Cookie'] = this.cookies.getHeaderStringForPath(this.host, this.path);
    }
 
    // add the post data
    if (this.data) {
-      options.headers['Content-Type'] = this.contentType;
-      options.headers['Content-Length'] = this.data.length;
+      options.headers['Content-Type'] = options.headers['Content-Type'] || this.contentType;
+      options.headers['Content-Length'] = options.headers['Content-Length'] || this.data.length;
    }
 
 // TODO - options.headers.Authorization = 'Basic ' + new Buffer(opts.auth).toString('base64');
