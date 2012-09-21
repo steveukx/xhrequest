@@ -12,7 +12,7 @@ var Response = require('./response'),
  */
 function Session(parsedUrl, config, transport) {
    this.port = parsedUrl.port || this.port;
-   this.host = parsedUrl.host;
+   this.host = parsedUrl.hostname;
    this.path = parsedUrl.pathname;
 
    if (parsedUrl.search) {
