@@ -8,6 +8,7 @@
 function Response(statusCode, headers) {
    this.statusCode = statusCode;
    this.headers = headers;
+   this.data = new Buffer;
 }
 
 /**
@@ -27,9 +28,9 @@ Response.prototype.headers = null;
  * in the case that nothing was received (ie: response ContentLength header was 0) or the actual
  * response.
  *
- * @type {String}
+ * @type {Buffer}
  */
-Response.prototype.data = '';
+Response.prototype.data = null;
 
 module.exports = Response;
 

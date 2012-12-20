@@ -66,3 +66,18 @@ url.parse = function(url) {
       search: ''
    }
 };
+
+function MockTransport() {
+}
+
+MockTransport.request = function(config, callback) {
+   return new MockRequest(config, callback);
+};
+
+function MockRequest(config, callback) {
+   this.config = config;
+   this._callback = callback;
+}
+MockRequest.prototype.end = function() {};
+MockRequest.prototype.on = function() {};
+MockRequest.prototype.write = function() {};

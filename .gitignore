@@ -1,4 +1,6 @@
 .DS_Store
+*.idea
+*.iml
 *.log
 *.swp
 node_modules/

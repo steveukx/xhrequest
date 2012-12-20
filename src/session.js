@@ -182,10 +182,14 @@ Session.prototype._onRequestOpened = function (res) {
 /**
  * As data is received it is appended to the Response object in the current Session.
  *
- * @param {String} data The block of data to append
+ * @param {Buffer} data The block of data to append
  */
 Session.prototype._onDataReceived = function (data) {
-   this.response.data += data;
+   var dataBuffer = this.response.data,
+       offset = dataBuffer.length;
+
+   dataBuffer.length += data.length;
+   data.copy(dataBuffer, offset);
 };
 
 /**
