@@ -12,7 +12,7 @@ var Response = require('./response'),
  */
 function Session(parsedUrl, config, transport) {
    this.port = parsedUrl.port || this.port;
-   this.host = parsedUrl.host;
+   this.host = parsedUrl.hostname;
    this.path = parsedUrl.pathname;
 
    if (parsedUrl.search) {
@@ -20,7 +20,7 @@ function Session(parsedUrl, config, transport) {
    }
 
    // apply optional things using the prototype as the default
-   ('success|error|complete|' + 'method|data|cookies|headers').split('|').forEach((function (el) {
+   ('success|error|complete|' + 'context|method|data|cookies|headers').split('|').forEach((function (el) {
       this[el] = config[el] || this[el];
    }).bind(this));
 
@@ -100,7 +100,13 @@ Session.prototype.error = function () {
 };
 
 /**
- * Irrispective of whether there was a success or error response, this method will be called after
+ * @type {Object} The scope that any of the handlers should be called in, when not set will be the scope of the Session instance
+ */
+Session.prototype.context = null;
+
+
+/**
+ * Irrespective of whether there was a success or error response, this method will be called after
  * the success/error methods are called, this is a noop function that can be overridden in the configuration object.
  * @type {Function}
  */
@@ -198,20 +204,22 @@ Session.prototype._onDataReceived = function (data) {
  */
 Session.prototype._onDataComplete = function () {
    var response = this.response;
+   var context = this.context || this;
+
    if (response.statusCode == 200) {
       try {
-         this.success(this.response.data, this.response, this);
+         this.success.call(context, this.response.data, this.response, this);
       } catch (e1) {
       }
    }
    else {
       try {
-         this.error(this.response.data, this.response, this);
+         this.error.call(context, this.response.data, this.response, this);
       } catch (e2) {
       }
    }
    try {
-      this.complete();
+      this.complete.call(context);
    } catch (e) {
    }
 };

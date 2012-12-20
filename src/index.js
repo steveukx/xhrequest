@@ -14,6 +14,11 @@ var Url = require('url'),
  * @return {Session}
  */
 function Xhr(url, config) {
+   if(typeof arguments[0] == 'object') {
+      config = arguments[0];
+      url = config.url;
+   }
+
    var parsedUrl = Url.parse(url),
       transport = http;
 
