@@ -8,7 +8,7 @@
 function Response(statusCode, headers) {
    this.statusCode = statusCode;
    this.headers = headers;
-   this.data = new Buffer;
+   this.data = new Buffer(0);
 }
 
 /**
