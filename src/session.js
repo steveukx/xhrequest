@@ -1,6 +1,8 @@
 var Response = require('./response'),
     CookieJar = require('./cookiejar');
 
+var debug = (process.env.DEBUG) ? console.log.bind(console) : function() {};
+
 /**
  * The session object is used to manage the request as it is made and configure how the request will be
  * issued. The session itself can use any transport mechanism that suports the same interface as the
@@ -28,7 +30,7 @@ function Session(parsedUrl, config, transport) {
       this.cookies = CookieJar.build(this.cookies || {});
    }
 
-   console.log('XHR session created', this);
+   debug('XHR session created', this);
    this._send(transport);
 }
 
@@ -86,7 +88,6 @@ Session.prototype.headers = null;
 /**
  * When a successful response (ie: status code 200) is received this method will be called, this is
  * a noop function that can be overridden in the configuration object.
- * @type {Function}
  */
 Session.prototype.success = function () {
 };
@@ -94,7 +95,6 @@ Session.prototype.success = function () {
 /**
  * When an error response (ie: anything other than status code 200) is received this method will be
  * called, this is a noop function that can be overridden in the configuration object.
- * @type {Function}
  */
 Session.prototype.error = function () {
 };
@@ -108,7 +108,6 @@ Session.prototype.context = null;
 /**
  * Irrespective of whether there was a success or error response, this method will be called after
  * the success/error methods are called, this is a noop function that can be overridden in the configuration object.
- * @type {Function}
  */
 Session.prototype.complete = function () {
 };
@@ -162,7 +161,7 @@ Session.prototype._send = function (transport) {
  * @param {Error} err Details of the connection failure
  */
 Session.prototype._error = function (err) {
-   console.log('XHR error', err, this);
+   debug('XHR error', err, this);
    try {
       this.error(err);
    } catch (e1) {
