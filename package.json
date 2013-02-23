@@ -1,7 +1,7 @@
 {
    "name":           "xhrequest",
    "description":    "Node implementation of XMLHttpRequest",
-   "version":        "1.0.9",
+   "version":        "1.0.10",
    "author":         "Steve King <steve@mydev.co>",
    "contributors": [
       { "name":"Steve King", "email":"steve@mydev.co" }

@@ -190,7 +190,8 @@ Session.prototype._onRequestOpened = function (res) {
  * @param {Buffer} data The block of data to append
  */
 Session.prototype._onDataReceived = function (data) {
-   this.response.data = Buffer.concat([this.response.data, data]);
+   var existingResponseData = this.response.data;
+   this.response.data = existingResponseData.length ? Buffer.concat([existingResponseData, data]) : data;
 };
 
 /**
