@@ -1,5 +1,5 @@
 var Response = require('./response'),
-    CookieJar = require('./cookiejar');
+   CookieJar = require('./cookiejar');
 
 var debug = (process.env.DEBUG) ? console.log.bind(console) : function() {};
 
@@ -162,12 +162,13 @@ Session.prototype._send = function (transport) {
  */
 Session.prototype._error = function (err) {
    debug('XHR error', err, this);
+   var context = this.context || this;
    try {
-      this.error(err);
+      this.error.call(context, err, this.response && this.response.data, this.response, this);
    } catch (e1) {
    }
    try {
-      this.complete();
+      this.complete.call(context, this.response, this);
    } catch (e2) {
    }
 };
@@ -215,11 +216,9 @@ Session.prototype._onDataComplete = function () {
       }
    }
    try {
-      this.complete.call(context);
+      this.complete.call(context, this.response, this);
    } catch (e) {
    }
 };
 
 module.exports = Session;
-
-
