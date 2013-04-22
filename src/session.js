@@ -22,9 +22,9 @@ function Session(parsedUrl, config, transport) {
    }
 
    // apply optional things using the prototype as the default
-   ('success|error|complete|' + 'context|method|data|cookies|headers').split('|').forEach((function (el) {
-      this[el] = config[el] || this[el];
-   }).bind(this));
+   'success error complete context method data cookies headers followRedirects'.split(' ').forEach(function (el) {
+      this[el] = config.hasOwnProperty(el) ?  config[el] : this[el];
+   }, this);
 
    if(!(this.cookies instanceof CookieJar)) {
       this.cookies = CookieJar.build(this.cookies || {});
@@ -86,8 +86,21 @@ Session.prototype.contentType = 'application/www-urlencoded';
 Session.prototype.headers = null;
 
 /**
+ * The number of 30x redirects that should be followed before returning the success or error handlers, by default
+ * this is zero which will ignore the redirection of a resource.
+ * @type {Number}
+ */
+Session.prototype.followRedirects = 0;
+
+/**
+ * The client request object generated when attempting to connect to the remote host
+ * @type {http.ClientRequest}
+ */
+Session.prototype._clientRequest = null;
+
+/**
  * When a successful response (ie: status code 200) is received this method will be called, this is
- * a noop function that can be overridden in the configuration object.
+ * a NoOp function that can be overridden in the configuration object.
  */
 Session.prototype.success = function () {
 };
@@ -145,7 +158,7 @@ Session.prototype._send = function (transport) {
 
 // TODO - options.headers.Authorization = 'Basic ' + new Buffer(opts.auth).toString('base64');
 
-   var req = transport.request(options, this._onRequestOpened.bind(this));
+   var req = this._clientRequest = transport.request(options, this._onRequestOpened.bind(this));
    if (this.data) {
       req.write(this.data);
    }
@@ -179,9 +192,28 @@ Session.prototype._error = function (err) {
  * @param {Object} res The response object from the remote call
  */
 Session.prototype._onRequestOpened = function (res) {
-   this.response = new Response(res.statusCode, res.headers);
-   res.on('data', this._onDataReceived.bind(this));
-   res.on('end', this._onDataComplete.bind(this));
+   if(/^30\d$/.test(res.statusCode) && res.headers.location && this.followRedirects) {
+      require('./index.js')(res.headers.location, {
+         success: function() {
+            this.success.apply(this.context || this, arguments);
+         },
+         error: function() {
+            this.error.apply(this.context || this, arguments);
+         },
+         complete: function() {
+            this.complete.apply(this.context || this, arguments);
+         },
+         context: this,
+         headers: this.headers,
+         followRedirects: this.followRedirects - 1
+      });
+      this._clientRequest.abort();
+   }
+   else {
+      this.response = new Response(res.statusCode, res.headers);
+      res.on('data', this._onDataReceived.bind(this));
+      res.on('end', this._onDataComplete.bind(this));
+   }
 };
 
 /**
@@ -221,5 +253,3 @@ Session.prototype._onDataComplete = function () {
 };
 
 module.exports = Session;
-
-
