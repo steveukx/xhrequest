@@ -2,14 +2,22 @@
  * The response object exposes the api of an XMLHttpRequest object that would have been returned in the
  * browser if the request had been made in the browser.
  *
+ * @param {String} url
  * @param {Number} statusCode
  * @param {Object} headers
  */
-function Response(statusCode, headers) {
+function Response(url, statusCode, headers) {
+   this.url = url;
    this.statusCode = statusCode;
    this.headers = headers;
    this.data = new Buffer(0);
 }
+
+/**
+ * The originally requested URL
+ * @type {String}
+ */
+Response.prototype.url = null;
 
 /**
  * The statusCode is the HTTP response code

@@ -16,6 +16,7 @@ function Session(parsedUrl, config, transport) {
    this.port = parsedUrl.port || this.port;
    this.host = parsedUrl.hostname;
    this.path = parsedUrl.pathname;
+   this.url = parsedUrl.href;
 
    if (parsedUrl.search) {
       this.path += parsedUrl.search;
@@ -211,7 +212,7 @@ Session.prototype._onRequestOpened = function (res) {
       this._clientRequest.abort();
    }
    else {
-      this.response = new Response(res.statusCode, res.headers);
+      this.response = new Response(this.url, res.statusCode, res.headers);
       res.on('data', this._onDataReceived.bind(this));
       res.on('end', this._onDataComplete.bind(this));
    }
