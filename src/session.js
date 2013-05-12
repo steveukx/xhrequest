@@ -177,12 +177,14 @@ Session.prototype._send = function (transport) {
 Session.prototype._error = function (err) {
    debug('XHR error', err, this);
    var context = this.context || this;
+   var response = this.response || new Response(this.url, 0, {});
+
    try {
-      this.error.call(context, err, this.response && this.response.data, this.response, this);
+      this.error.call(context, err, response.data, response, this);
    } catch (e1) {
    }
    try {
-      this.complete.call(context, this.response, this);
+      this.complete.call(context, response, this);
    } catch (e2) {
    }
 };
