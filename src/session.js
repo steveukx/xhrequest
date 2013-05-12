@@ -197,7 +197,9 @@ Session.prototype._error = function (err) {
  */
 Session.prototype._onRequestOpened = function (res) {
    if(/^30\d$/.test(res.statusCode) && res.headers.location && this.followRedirects) {
-      require('./index.js')(res.headers.location, {
+      var location = require('url').resolve(this.url, res.headers.location);
+      debug('XHR:REDIRECT from %s to %s', this.url, location);
+      require('./index.js')(location, {
          success: function() {
             this.success.apply(this.context || this, arguments);
          },
