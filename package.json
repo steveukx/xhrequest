@@ -1,7 +1,7 @@
 {
    "name":           "xhrequest",
    "description":    "Node implementation of XMLHttpRequest",
-   "version":        "1.0.15",
+   "version":        "1.0.16",
    "author":         "Steve King <steve@mydev.co>",
    "contributors": [
       { "name":"Steve King", "email":"steve@mydev.co" }
@@ -11,7 +11,7 @@
    "keywords":        ["web", "xhr", "ajax"],
    "repository":      {
         "type": "git"
-      , "src":  "git://github.com/steveukx/xhrequest.git"
+      , "src":  "https://github.com/steveukx/xhrequest.git"
    },
    "main":            "index",
    "bin":             {},
