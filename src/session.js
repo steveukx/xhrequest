@@ -1,5 +1,5 @@
 var Response = require('./response'),
-   CookieJar = require('./cookiejar');
+    CookieJar = require('./cookiejar');
 
 var debug = (process.env.DEBUG) ? console.log.bind(console) : function() {};
 
@@ -23,7 +23,7 @@ function Session(parsedUrl, config, transport) {
    }
 
    // apply optional things using the prototype as the default
-   'success error complete context method data cookies headers followRedirects'.split(' ').forEach(function (el) {
+   'success error complete context method data cookies headers followRedirects timeout'.split(' ').forEach(function (el) {
       this[el] = config.hasOwnProperty(el) ?  config[el] : this[el];
    }, this);
 
@@ -92,6 +92,16 @@ Session.prototype.headers = null;
  * @type {Number}
  */
 Session.prototype.followRedirects = 0;
+
+/**
+ * The number of milliseconds that the request should wait for a response to the connection before timing out and assuming
+ * that no response will be received. Set to zero or any negative number to wait until Node automatically times out the
+ * underlying socket.
+ *
+ * @type {Number}
+ */
+Session.prototype.timeout = 0;
+
 
 /**
  * The client request object generated when attempting to connect to the remote host
@@ -163,9 +173,16 @@ Session.prototype._send = function (transport) {
    if (this.data) {
       req.write(this.data);
    }
-   req.end();
+
+   if(this.timeout > 0) {
+      req.on('socket', function(socket) {
+         socket.setTimeout(this.timeout, this._error.bind(this, new Error('Connection timed out')));
+      }.bind(this));
+   }
 
    req.on('error', this._error.bind(this));
+
+   req.end();
 };
 
 /**
