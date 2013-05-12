@@ -180,7 +180,7 @@ Session.prototype._error = function (err) {
    var response = this.response || new Response(this.url, 0, {});
 
    try {
-      this.error.call(context, err, response.data, response, this);
+      this.error.call(context, err, response, this);
    } catch (e1) {
    }
    try {
